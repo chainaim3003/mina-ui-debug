@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "deployAliases": {
+    "try1": {
+      "networkId":"testnet",
+      "url": "https://api.minascan.io/node/devnet/v1/graphql",
+      "keyPath": "keys/try1.json",
+      "feepayerKeyPath": "/Users/saitunc/Downloads/try1/contracts/keys/try1.json",
+      "feepayerAlias": "try1",
+      "fee": "0.1",
+      "smartContract": "MCALevel1FirstWayCircuit"
+    },
+    "try2": {
+      "networkId": "testnet",
+      "url": "https://api.minascan.io/node/devnet/v1/graphql",
+      "keyPath": "keys/try2.json",
+      "feepayerKeyPath": "/Users/saitunc/Downloads/try1/contracts/keys/try2.json",
+      "feepayerAlias": "try2",
+      "fee": "0.1",
+      "smartContract": "MCALevel1FirstWayCircuit1"
+    },
+    "try3": {
+      "networkId": "testnet",
+      "url": "https://api.minascan.io/node/devnet/v1/graphql",
+      "keyPath": "keys/try3.json",
+      "feepayerKeyPath": "/Users/saitunc/Downloads/try1/contracts/keys/try3.json",
+      "feepayerAlias": "try3",
+      "fee": "0.1",
+      "smartContract": "MCALevel1FirstWayCircuit1"
+    }
+  }
+}
