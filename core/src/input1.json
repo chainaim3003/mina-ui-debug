@@ -1,0 +1,31 @@
+[
+    {
+        "contractId":"ann01","status":"Success",
+        "message":"",
+        "events":[{"type":"IED","time":"2013-01-01T00:00","payoff":-5000,"currency":"USD","nominalValue":5000,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-02-01T00:00","payoff":400.89399137861994,"currency":"USD","nominalValue":4599.10600862138,"nominalRate":0.08,"nominalAccrued":33.97260273972603}
+,{"type":"IP","time":"2013-02-01T00:00","payoff":33.97260273972603,"currency":"USD","nominalValue":4599.10600862138,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-03-01T00:00","payoff":406.6419435448887,"currency":"USD","nominalValue":4192.464065076491,"nominalRate":0.08,"nominalAccrued":28.224650573457236}
+,{"type":"IP","time":"2013-03-01T00:00","payoff":28.224650573457236,"currency":"USD","nominalValue":4192.464065076491,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-04-01T00:00","payoff":406.3808108816619,"currency":"USD","nominalValue":3786.0832541948294,"nominalRate":0.08,"nominalAccrued":28.485783236684107}
+,{"type":"IP","time":"2013-04-01T00:00","payoff":28.485783236684107,"currency":"USD","nominalValue":3786.0832541948294,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-05-01T00:00","payoff":409.9718001181608,"currency":"USD","nominalValue":3376.1114540766685,"nominalRate":0.08,"nominalAccrued":24.894794000185176}
+,{"type":"IP","time":"2013-05-01T00:00","payoff":24.894794000185176,"currency":"USD","nominalValue":3376.1114540766685,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-06-01T00:00","payoff":411.9275354714689,"currency":"USD","nominalValue":2964.1839186051993,"nominalRate":0.08,"nominalAccrued":22.93905864687709}
+,{"type":"IP","time":"2013-06-01T00:00","payoff":22.93905864687709,"currency":"USD","nominalValue":2964.1839186051993,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-07-01T00:00","payoff":415.3760697220378,"currency":"USD","nominalValue":2548.8078488831616,"nominalRate":0.08,"nominalAccrued":19.490524396308157}
+,{"type":"IP","time":"2013-07-01T00:00","payoff":19.490524396308157,"currency":"USD","nominalValue":2548.8078488831616,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-08-01T00:00","payoff":417.5486668163453,"currency":"USD","nominalValue":2131.2591820668163,"nominalRate":0.08,"nominalAccrued":17.31792730200066}
+,{"type":"IP","time":"2013-08-01T00:00","payoff":17.31792730200066,"currency":"USD","nominalValue":2131.2591820668163,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-09-01T00:00","payoff":420.3857098127961,"currency":"USD","nominalValue":1710.8734722540203,"nominalRate":0.08,"nominalAccrued":14.480884305549875}
+,{"type":"IP","time":"2013-09-01T00:00","payoff":14.480884305549875,"currency":"USD","nominalValue":1710.8734722540203,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-10-01T00:00","payoff":423.6170151227031,"currency":"USD","nominalValue":1287.2564571313171,"nominalRate":0.08,"nominalAccrued":11.249578995642873}
+,{"type":"IP","time":"2013-10-01T00:00","payoff":11.249578995642873,"currency":"USD","nominalValue":1287.2564571313171,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-11-01T00:00","payoff":426.1203036698921,"currency":"USD","nominalValue":861.136153461425,"nominalRate":0.08,"nominalAccrued":8.74629044845388}
+,{"type":"IP","time":"2013-11-01T00:00","payoff":8.74629044845388,"currency":"USD","nominalValue":861.136153461425,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"PR","time":"2013-12-01T00:00","payoff":429.2043289996955,"currency":"USD","nominalValue":431.9318244617295,"nominalRate":0.08,"nominalAccrued":5.662265118650466}
+,{"type":"IP","time":"2013-12-01T00:00","payoff":5.662265118650466,"currency":"USD","nominalValue":431.9318244617295,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"IP","time":"2014-01-01T00:00","payoff":2.9347696566166825,"currency":"USD","nominalValue":431.9318244617295,"nominalRate":0.08,"nominalAccrued":0}
+,{"type":"MD","time":"2014-01-01T00:00","payoff":431.9318244617295,"currency":"USD","nominalValue":0,"nominalRate":0.08,"nominalAccrued":0}]
+}
+]
