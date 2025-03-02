@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "axios": "^1.7.9",
+    "child-process": "^1.0.2",
+    "cors": "^2.8.5",
+    "ethers": "^5.7.2",
+    "express": "^4.21.2",
+    "i": "^0.3.7",
+    "merkletreejs": "^0.4.1",
+    "multer": "^1.4.5-lts.1",
+    "o1js": "^1.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "state": "^0.2.0",
+    "url": "^0.11.4",
+    "ws": "^8.18.0",
+    "xml2js": "^0.4.23" 
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "buildw": "tsc --watch",
+    "start": "node build/main.mjs"
+  },
+  "type": "module"
+}

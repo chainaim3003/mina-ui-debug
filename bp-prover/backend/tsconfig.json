@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "es2022",
+    "lib": ["dom", "esnext"],
+    "outDir": "./build",
+    "rootDir": "./src", // Set rootDir to "src"
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowJs": true,
+    "declaration": true,
+    "sourceMap": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "useDefineForClassFields": false
+  },
+  "include": [
+    "./src/**/*"  // Include all files inside the 'src' folder
+, "src/circuitGen.js"  ],
+  "exclude": [
+    "node_modules"  // Exclude 'node_modules' from compilation
+  ]
+}
