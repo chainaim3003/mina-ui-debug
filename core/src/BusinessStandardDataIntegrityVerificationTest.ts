@@ -1,8 +1,9 @@
-
-
+import { exec } from 'child_process';
+import * as fs from 'fs'; 
 import { Field, Mina, PrivateKey, AccountUpdate, CircuitString } from 'o1js';
-import { BusinessStandardDataIntegrityZKProgram, BusinessStandardDataIntegrityComplianceData } from './BusinessStandardDataIntegrityZKProgram.js';
+import { BusinessStandardDataIntegrityZKProgram, BusinessStandardDataIntegrityComplianceData, BusinessStandardDataIntegrityProof } from './BusinessStandardDataIntegrityZKProgram.js';
 import { BusinessStandardDataIntegrityVerificationSmartContract } from './BusinessStandardDataIntegrityVerificationSmartContract.js';
+
 
 import axios from 'axios';
 
@@ -11,6 +12,12 @@ async function main() {
     const expectedContent = "a(cb|bc)d(ef|f)g";
   //const actualPath = process.argv[3];
     const actualContent = "abcdfg";
+
+    const evalBLJsonFileName = 'actualBL1.json';
+
+    const evalBLJson = JSON.parse(await fs.promises.readFile('actualBL1.json', 'utf8'));
+
+    console.log ( "eval BL JSON  in verification test ... ...", evalBLJson)
 
     const useProof = false;
 
@@ -22,12 +29,9 @@ async function main() {
     const senderAccount = Local.testAccounts[1];
     const senderKey = senderAccount.key;
 
-
     console.log('Compiling...');
 
-
     await BusinessStandardDataIntegrityZKProgram.compile();
-
 
     const { verificationKey } = await BusinessStandardDataIntegrityVerificationSmartContract.compile();
 
@@ -35,12 +39,9 @@ async function main() {
     const zkAppKey = PrivateKey.random();
     const zkAppAddress = zkAppKey.toPublicKey();
 
-
     console.log("ZKAppAddress is successful");
 
     const zkApp = new BusinessStandardDataIntegrityVerificationSmartContract(zkAppAddress);
-
-
     console.log("zkApp is successful");
 
     console.log("Mina transaction is successful");
@@ -51,15 +52,11 @@ async function main() {
             AccountUpdate.fundNewAccount(deployerAccount);
             await zkApp.deploy({ verificationKey });
 
-
-
         }
     );
     console.log("deployTxn is successful");
     await deployTxn.sign([deployerKey, zkAppKey]).send();
     console.log("deployTxn signed successfully");
-
-
     console.log("Fetching compliance data...");
     const BASEURL = "https://0f4aef00-9db0-4057-949e-df6937e3449b.mock.pstmn.io";
     const companyname = "vernon_dgft"
@@ -67,10 +64,10 @@ async function main() {
     const parsedData = response.data;
 
     console.log(parsedData);
-    console.log("HI");
+    //console.log("HI");
 
-    console.log(parsedData["iec"]);
-    console.log(parsedData["iecStatus"]);
+    //console.log(parsedData["iec"]);
+    //console.log(parsedData["iecStatus"]);
 
     const BusinessStandardDataIntegritycomplianceData = new BusinessStandardDataIntegrityComplianceData({
         // iec: CircuitString.fromString(parsedData["iec"] || ''),
@@ -104,11 +101,14 @@ async function main() {
         // director2Name: CircuitString.fromString(parsedData.directors?.[1]?.name || ''),
         businessStandardDataIntegrityEvaluationId : Field(parsedData["BusinessStandardDataIntegrityEvaluation ID"] ?? 0),
         expectedContent: CircuitString.fromString(expectedContent),
-        actualContent: CircuitString.fromString(actualContent)
+        //actualContent: CircuitString.fromString(actualContent),
+        actualContent: evalBLJson,
+        actualContentFilename:'actualBL1.json',
+
     });
 
 
-    const proof = await BusinessStandardDataIntegrityZKProgram.proveCompliance(Field(0),BusinessStandardDataIntegritycomplianceData)
+    const proof = await BusinessStandardDataIntegrityZKProgram.proveCompliance(Field(1),BusinessStandardDataIntegritycomplianceData)
 
     console.log("Before verification, Initial value of num:",zkApp.num.get().toJSON());
     // Verify proof
@@ -121,9 +121,8 @@ async function main() {
     // await txn.sign([zkAppKey]).send();
 
     const proof1 = await txn.prove();
-    //await txn.prove();
 
-
+    
     console.log("Proof generated successfully");
     console.log(senderAccount.toJSON());
     console.log(senderKey.toJSON(),senderKey.toPublicKey());
@@ -139,5 +138,6 @@ main().catch(err => {
 });
 
 //export { ComplianceData };
+
 
 
