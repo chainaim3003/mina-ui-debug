@@ -18,6 +18,8 @@ export class BusinessStandardDataIntegrityVerificationSmartContract extends Smar
       // Ensure the state of `num` matches its current value
       this.num.requireEquals(this.num.get());
       const currentNum = this.num.get();
+
+      //console.log ( '  smart contract proof public output .. ID' , proof.publicOutput.businessStandardDataIntegrityEvaluationId ,'result ...',proof.publicOutput.result)
     
       // Update the state
       const updatedNum = currentNum.sub(10);
@@ -25,6 +27,3 @@ export class BusinessStandardDataIntegrityVerificationSmartContract extends Smar
     }
 
 }
-    
-
-
