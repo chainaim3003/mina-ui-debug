@@ -1,142 +1,161 @@
-import { exec } from 'child_process';
-import * as fs from 'fs'; 
-import { Field, Mina, PrivateKey, AccountUpdate, CircuitString } from 'o1js';
-import { BusinessStandardDataIntegrityZKProgram, BusinessStandardDataIntegrityComplianceData, BusinessStandardDataIntegrityProof } from './BusinessStandardDataIntegrityZKProgram.js';
-import { BusinessStandardDataIntegrityVerificationSmartContract } from './BusinessStandardDataIntegrityVerificationSmartContract.js';
+import { verifyProcess } from './bpmnCircuit.js';
+import { verifyActualFromFile, verifyActualFromJSONString } from './verifyActual.js';
 
-import axios from 'axios';
+import {
+    Field,
+    Signature,
+    SmartContract,
+    PublicKey,
+    Struct,
+    ZkProgram,
+    Proof,
+    CircuitString,
+    method,
+    Permissions,
+    Circuit,
+    Bool,
+    Bytes,
+  } from 'o1js';
+  
+  class Bytes200 extends Bytes(200){}
 
-async function main() {
+  export class BusinessStandardDataIntegrityComplianceData extends Struct({
 
-    const expectedContent = "a(cb|bc)d(ef|f)g";
-  //const actualPath = process.argv[3];
-    const actualContent = "abcdfg";
-    const evalBLJsonFileName = 'actualBL1.json';
-
-    const evalBLJson = JSON.parse(await fs.promises.readFile('actualBL1.json', 'utf8'));
-
-    console.log ( "eval BL JSON  in verification test ... ...", evalBLJson)
-
-    const useProof = false;
-
-    const Local = await Mina.LocalBlockchain({ proofsEnabled: useProof });
-    Mina.setActiveInstance(Local);
-
-    const deployerAccount = Local.testAccounts[0];
-    const deployerKey = deployerAccount.key;
-    const senderAccount = Local.testAccounts[1];
-    const senderKey = senderAccount.key;
-
-    console.log('Compiling...');
-
-    await BusinessStandardDataIntegrityZKProgram.compile();
-
-    const { verificationKey } = await BusinessStandardDataIntegrityVerificationSmartContract.compile();
-
-    console.log("verification key is successful");
-    const zkAppKey = PrivateKey.random();
-    const zkAppAddress = zkAppKey.toPublicKey();
-
-    console.log("ZKAppAddress is successful");
-
-    const zkApp = new BusinessStandardDataIntegrityVerificationSmartContract(zkAppAddress);
-    console.log("zkApp is successful");
-
-    console.log("Mina transaction is successful");
-
-    const deployTxn = await Mina.transaction(
-        deployerAccount,
-        async () => {
-            AccountUpdate.fundNewAccount(deployerAccount);
-            await zkApp.deploy({ verificationKey });
-
-        }
-    );
-    console.log("deployTxn is successful");
-    await deployTxn.sign([deployerKey, zkAppKey]).send();
-    console.log("deployTxn signed successfully");
-    console.log("Fetching compliance data...");
-    const BASEURL = "https://0f4aef00-9db0-4057-949e-df6937e3449b.mock.pstmn.io";
-    const companyname = "vernon_dgft"
-    const response = await axios.get(`${BASEURL}/${companyname}`); // Replace with your mock API endpoint
-    const parsedData = response.data;
-
-    console.log(parsedData);
-    //console.log("HI");
-
-    //console.log(parsedData["iec"]);
-    //console.log(parsedData["iecStatus"]);
-
-    const BusinessStandardDataIntegritycomplianceData = new BusinessStandardDataIntegrityComplianceData({
-        // iec: CircuitString.fromString(parsedData["iec"] || ''),
-        // entityName: CircuitString.fromString(parsedData["entityName"] || ''),
-        // addressLine1: CircuitString.fromString(parsedData["addressLine1"] || ''),
-        // addressLine2: CircuitString.fromString(parsedData["addressLine2"] || ''),
-        // city: CircuitString.fromString(parsedData["city"] || ''),
-        // state: CircuitString.fromString(parsedData["state"] || ''),
-        // pin: Field(parsedData["pin"] ?? 0),
-        // contactNo: Field(parsedData["contactNo"] ?? 0),
-        // email: CircuitString.fromString(parsedData["email"] || ''),
-        // iecIssueDate: CircuitString.fromString(parsedData["iecIssueDate"] || ''),
-        // exporterType: Field(parsedData["exporterType"] ?? 0),
-        // pan: CircuitString.fromString(parsedData["pan"] || ''),
-        // iecStatus: Field(parsedData["iecStatus"] ?? 0),
-        // starStatus: Field(parsedData["starStatus"] ?? 0),
-        // iecModificationDate: CircuitString.fromString(parsedData["iecModificationDate"] || ''),
-        // dataAsOn: CircuitString.fromString(parsedData["dataAsOn"] || ''),
-        // natureOfConcern: Field(parsedData["natureOfConcern"] ?? 0),
-
-        // // Branch Data (from branches[0])
-        // branchCode: Field(parsedData.branches?.[0]?.branchCode ?? 0),
-        // badd1: CircuitString.fromString(parsedData.branches?.[0]?.badd1 || ''),
-        // badd2: CircuitString.fromString(parsedData.branches?.[0]?.badd2 || ''),
-        // branchCity: CircuitString.fromString(parsedData.branches?.[0]?.city || ''),
-        // branchState: CircuitString.fromString(parsedData.branches?.[0]?.state || ''),
-        // branchPin: Field(parsedData.branches?.[0]?.pin ?? 0),
-
-        // // Director Data (from directors)
-        // director1Name: CircuitString.fromString(parsedData.directors?.[0]?.name || ''),
-        // director2Name: CircuitString.fromString(parsedData.directors?.[1]?.name || ''),
-        businessStandardDataIntegrityEvaluationId : Field(parsedData["BusinessStandardDataIntegrityEvaluation ID"] ?? 0),
-        expectedContent: CircuitString.fromString(expectedContent),
-        //actualContent: CircuitString.fromString(actualContent),
-        actualContent: evalBLJson,
-        actualContentFilename:'actualBL1.json',
-
-    });
-
-
-    const proof = await BusinessStandardDataIntegrityZKProgram.proveCompliance(Field(1),BusinessStandardDataIntegritycomplianceData)
-
-    console.log("Before verification, Initial value of num:",zkApp.num.get().toJSON());
-    // Verify proof
-    const txn = await Mina.transaction(
-        senderAccount,
-        async () => {
-            await zkApp.verifyComplianceWithProof(proof);
-        }
-    );
-    // await txn.sign([zkAppKey]).send();
-
-    const proof1 = await txn.prove();
-
+    //standard schema swagger 
+    // standardSwaggerYmlString: String,
+    businessStandardDataIntegrityEvaluationId : Field,
+    expectedContent: CircuitString,
+    //actualContent: CircuitString,
+    actualContent: String,
+    actualContentFilename: String,
+    //result:bool    
+  }) {}
+  
+  export class BusinessStandardDataIntegrityPublicOutput extends Struct({
+    //businessStandardDataIntegrityEvaluationId: Field,
+    //result:Bool,
     
-    console.log("Proof generated successfully");
-    console.log(senderAccount.toJSON());
-    console.log(senderKey.toJSON(),senderKey.toPublicKey());
-    console.log("Generated Proof:",proof1.toPretty());
-    await txn.sign([senderKey]).send();
-    console.log("Final value of num:",zkApp.num.get().toJSON());
+  }) {}
+  
+  export const BusinessStandardDataIntegrityZKProgram = ZkProgram({
+    name: 'BusinessStandardDataIntegrityZKProgram',
+    publicInput: Field,
+    publicOutput: BusinessStandardDataIntegrityPublicOutput,
+    methods: {
+      proveCompliance: {
+        privateInputs: [BusinessStandardDataIntegrityComplianceData],
+        async method(
+          BusinessStandardDataIntegrityToProve: Field,
+          businessStandardDataIntegrityData: BusinessStandardDataIntegrityComplianceData,
+        ): Promise<BusinessStandardDataIntegrityPublicOutput> {
+          
+          //console.log('Data before compliance check - Company Name:', BusinessStandardDataIntegrityData.entityName.toString, 'IEC Status:', BusinessStandardDataIntegrityData.iecStatus.toString);
+  
+          // Compliance check: Verify that for a pregenerated circuit for that swagger /example json,actual json supplied goes through the circuit
+          //and for all the checks that the circuit performs ouput bool 
+      
+            //replace this code call the DC prover logic passing in the actual json and which circuit to check for
 
-    console.log('✅ Proof verified successfully!');
-}
+            //set the mina datatype boolean to be false based on the dc prover object result do the assert 
+  
+          //console.log('Data after compliance check - Company Name:', BusinessStandardDataIntegrityData.entityName.toString, 'IEC Status:', BusinessStandardDataIntegrityData.iecStatus.toString);
 
-main().catch(err => {
-    console.error('Error:', err);
-});
+          /*
+                      const validSignature = oracleSignature.verify(
+                        PublicKey.fromBase58('B62qmXFNvz2sfYZDuHaY5htPGkx1u2E2Hn3rWuDWkE11mxRmpijYzWN'),
+                        CorporateRegistrationData.toFields(corporateRegistrationData)
+                      );
+                      validSignature.assertTrue();
+              
+                      const validSignature_ = creatorSignature.verify(
+                        creatorPublicKey,
+                        CorporateRegistrationData.toFields(corporateRegistrationData)
+                      );
+                      validSignature_.assertTrue();
+                      */
+                          
+                     //This works
+                     const actualPath1=CircuitString.fromString("abcdfg");
+                    //console.log("ActualPath1:",actualPath1.values.toString());
+          
+                    // console.log( "actual path ",businessProcessIntegrityData.actualContent.toString);
+                    // let input=Bytes50.fromString(`${businessProcessIntegrityData.actualContent}`);
+                    //Provable.log(businessProcessIntegrityData.expectedContent);
+                              
+                     /* Provable.asProver(() => {
+                        console.log( "actual path ",businessProcessIntegrityData.actualContent.toString);
+                        input=Bytes50.fromString(`${businessProcessIntegrityData.actualContent}`);
+                      
+                      });
+                      Provable.log(businessProcessIntegrityData.actualContent);*/
+                      //const actualPath2=businessStandardDataIntegrityData.actualContent;
+                      //console.log("ActualPath2:",actualPath2.values.toString());
 
-//export { ComplianceData };
+                      const actualPath2=businessStandardDataIntegrityData.actualContentFilename;
+                      
+                      console.log(" ********************************************** ");
+                      console.log(" Inside ... Biz Std .. ZK Prog ", actualPath2);
 
+                      //this workscls
+                      let out = Bool(true);
+
+                      //out=verifyProcess(Bytes200.fromString(`${actualPath1}`).bytes);
+
+                      out = await verifyActualFromFile(actualPath2);
+                      console.log ( 'out in ZK prover ......@@@@@@@@@@@@@@@@@ ', out) ;
+                      
+                      //const out=verifyActualFromFile(Bytes200.fromString(`${actualPath1}`).bytes);
+                      //console.log(" evaluation for actual BL   :", actualPath1 , ' '    ,out.toJSON());
+                      //this doesn't work
+                      //const out=verifyProcess(Bytes50.fromString(`${actualPath2}`).bytes);
+                      //const out=verifyProcess().bytes);
+
+                      //const result = await verifySchema(requiredKeys, d, evalBLJson);
+                   
+                      //console.log("Final OUT  in ZKProg ..... :",out.toJSON());
+                             //out.assertTrue();
+          
+                      //*******BusinessStandardIntegrityZKProgram */
+                      //we have to call a circuit which is the circuit he called already I would rather call it DCProver
+                      //DCProver has a out function that is similar to bpmn which is supposed to give true or false.
+                      //
+                      
+                      // NOW change the logic to map to the real compliance data from MCA API.... 
+                      
+                      //console.log(' data bef ..  company name ',corporateRegistrationData.companyName.toString, ' active compliance ..', corporateRegistrationData.activeCompliance.toString) 
+                     
+                      //corporateRegistrationData.currCorporateComplianceStatusCode.assertEquals(Field(1));
+            
+                      //const expectedActiveComplianceHash = CircuitString.fromString("Active").hash();
+                      //const activeComplianceHash = corporateRegistrationData.activeCompliance.hash();
+                    
+                      // Verification logic: check active compliance and company status
+                      //activeComplianceHash.assertEquals(expectedActiveComplianceHash);
+                      
+                      //console.log(' data aft ..  company name ',corporateRegistrationData.companyName.toString, ' active compliance ..', corporateRegistrationData.activeCompliance.toString) 
+                     
+                      return new BusinessStandardDataIntegrityPublicOutput({
+                        //corporateComplianceToProve: corporateComplianceToProve,
+                        //currCompanyComplianceStatusCode: corporateRegistrationData.currCompanyComplianceStatusCode,
+                        //outputExpectedHash: Field(corporateRegistationToProveHash),
+                        //outputActualHash: Field(1),
+                        //creatorPublicKey: creatorPublicKey,
+                        //businessProcessID : businessStandardDataIntegrityData.businessProcessID,
+                        //companyName: corporateRegistrationData.companyName,
+                        //companyID: corporateRegistrationData.companyID,
+                       // complianceProof: CorporateRegistration.proveCompliance(Field(0),complianceData)
+                       
+                       //businessStandardDataIntegrityEvaluationId : businessStandardDataIntegrityData.businessStandardDataIntegrityEvaluationId,
+                       //result : Bool(out),
+            
+                      });
+
+        },
+      },
+    },
+  });
+  
+  export class BusinessStandardDataIntegrityProof extends ZkProgram.Proof(BusinessStandardDataIntegrityZKProgram) {}
   
   
   
